@@ -1,8 +1,11 @@
+import React from 'react';
 import { Component } from "react";
+import { Navigate, navigate } from 'react-router-dom';
 
 export default class TodoAdd extends Component {
     constructor(props) {
         super(props);
+        this.state = { redirect: false };
         this.handleTitleChange = this.handleTitleChange.bind(this);
         this.handleDescChange = this.handleDescChange.bind(this);
         this.handleImageChange = this.handleImageChange.bind(this);
@@ -47,12 +50,13 @@ export default class TodoAdd extends Component {
         newDeed.createdAt = date.toLocaleString();
         newDeed.key = date.getTime();
         this.props.add(newDeed);
-        this.clearFormData();
-        evt.target.reset();
+        this.setState((state) => ({ redirect: true }));
     }
 
     render() {
-        return (
+        if (this.state.redirect)
+            return <Navigate to='/' />;
+        else return (
             <section>
                 <h1>Создание нового дела</h1>
                 <form onSubmit={this.handleFormSubmit}>

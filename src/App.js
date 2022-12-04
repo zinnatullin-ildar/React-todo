@@ -1,8 +1,10 @@
+import React from 'react';
 import { HashRouter, Routes, Route, NavLink } from 'react-router-dom';
 import { Component } from 'react';
 import './App.css';
-import TodoList from './TodoList';
-import TodoAdd from './TodoAdd';
+import TodoList from './components/TodoList';
+import TodoAdd from './components/TodoAdd';
+import TodoDetail from './components/TodoDetail';
 
 
 const date1 = new Date(2021, 7, 19, 14, 5);
@@ -30,10 +32,12 @@ const initialData = [
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { data: initialData };
+    this.state = { data: initialData, showMenu: false };
     this.setDone = this.setDone.bind(this);
     this.delete = this.delete.bind(this);
     this.add = this.add.bind(this);
+    this.showMenu = this.showMenu.bind(this);
+    this.getDeed = this.getDeed.bind(this);
   }
 
   add(deed) {
@@ -58,6 +62,17 @@ export default class App extends Component {
     this.setState((state) => ({ data: newData }));
   }
 
+  showMenu(evt) {
+    evt.preventDefault();
+    this.setState((state) => ({ showMenu: !state.showMenu }));
+  }
+
+  getDeed(key) {
+    key = +key;
+    return this.state.data.find((current) => current.key === key);
+  }
+
+
   render() {
     return (
       <HashRouter>
@@ -65,33 +80,38 @@ export default class App extends Component {
           <div className='navbar-brand'>
             <NavLink
               to='/'
-              className={({ isActive }) =>
-                'navbar-item is-uppercase' +
-                (isActive ? ' is-active' : '')
-              }>
+              className={({ isActive }) => 'navbar-item is-uppercase' + (isActive ? ' is-active' : '')}>
               Todos
             </NavLink>
+            <a href='/'
+              className={this.state.showMenu ? 'navbar-burger is-active' : 'navbar-burger'}
+              onClick={this.showMenu}>
+              <span></span>
+              <span></span>
+              <span></span>
+            </a>
           </div>
-          <div className='navbar-menu'>
-            <div className='navbar-start'>
-              <NavLink
-                to='/add'
-                className={({ isActive }) =>
-                  'navbar-item' +
-                  (isActive ? ' is-active' : '')
-                }>
-                Создать дело
-              </NavLink>
-            </div>
+          <div className={this.state.showMenu ? 'navbar-menu is-active' : 'navbar-menu'}
+            onClick={this.showMenu}>
+          </div>
+          <div className='navbar-start'>
+            <NavLink
+              to='/add'
+              className={({ isActive }) => 'navbar-item' + (isActive ? ' is-active' : '')}>
+              Создать дело
+            </NavLink>
           </div>
         </nav>
         <main className='content px-6 mt-6'>
           <Routes>
-            <Route path='/' element={
-              <TodoList list={this.state.data} setDone={this.setDone} delete={this.delete} />}
+            <Route path='/'
+              element={<TodoList list={this.state.data} setDone={this.setDone} delete={this.delete} />}
             />
-            <Route path='/add' element={
-              <TodoAdd add={this.add} />}
+            <Route path='/add'
+              element={<TodoAdd add={this.add} />}
+            />
+            <Route path='/key'
+              element={<TodoDetail getDeed={this.getDeed} />}
             />
           </Routes>
         </main>
